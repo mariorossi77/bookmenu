@@ -2,6 +2,5 @@
 CLI for Library Genesis
 
 # requirements
-chafa
-
+chafa  
 wget >= 1.16
