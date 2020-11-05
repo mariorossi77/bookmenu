@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="1.0"
+VERSION="1.3"
 URL="https://1lib.eu/s/"
 INDEX="/tmp/bookmenu_index"
 LIST="/tmp/bookmenu_list"
@@ -8,7 +8,6 @@ INFO="/tmp/bookmenu_info"
 COVER="/tmp/bookmenu_cover"
 IMAGE="/tmp/bookmenu_image"
 TEXT="/tmp/bookmenu_text"
-EXT="epub"
 LOGO_URL="https://book4you.org/img/logo.zlibrary.png"
 LOGO_IMG="/tmp/bookmenu_logo"
 LOGO="/tmp/bookmenu_logo_chf"
@@ -16,45 +15,45 @@ QUIET="true" # set to false if you have a slow connection
 
 download() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget -q --show-progress $1 -O $2; }
 
-display() { 
-	paste $1 $2 | while read OUTPUT; do
-		echo "$OUTPUT"
-		sleep .02
-	done
+display() {
+        paste $1 $2 | while read OUTPUT; do
+                echo "$OUTPUT"
+                sleep .02
+        done
 }
 
 banner() {
-	clear
-	echo "loading..."
-	download $LOGO_URL $LOGO_IMG
-	chafa $LOGO_IMG > $LOGO
-	clear
-	display $LOGO
-	echo -e "\n$1\n"
+        clear
+        echo "loading..."
+        download $LOGO_URL $LOGO_IMG
+        chafa $LOGO_IMG > $LOGO
+        clear
+        display $LOGO
+        echo -e "\n$1\n"
 }
 
-main() {	
-	local count=1
-	banner "BOOKMENU v${VERSION}"
-	read -p "search books: " QUERY
-	echo "downloading index..."
-	curl -s "${URL}${QUERY}/?extension=${EXT}" > $INDEX # GET INDEX
-	grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST # GET COVERS
-	grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO # GET INFO
-	for link in $(cat $LIST); do
-		SIZE=$(( ($(tput cols)/2) - 1))
-		sed -n "${count}p" $INFO | sed -e "s/.\{${SIZE}\}/&\n/g" > $TEXT
-		download $link $COVER
-		clear
-		chafa $COVER > $IMAGE
-		display $IMAGE $TEXT
-		let count++
-		echo -e "\nPress Enter to continue..." && read
-		clear
-	done
-	[[ $count == 1 ]] && echo "no books found"; exit 0;
-	banner "no books left"
-	rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT $LOGO_IMG $LOGO_CHF $DESC 2>/dev/null
+main() {
+        local count=1
+        banner "BOOKMENU v${VERSION}"
+        read -p "search books: " QUERY
+        echo "downloading index..."
+        curl -s "${URL}${QUERY%% *}/?extension=epub" > $INDEX # GET INDEX
+        grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST # GET COVERS
+        grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO # GET INFO
+        for link in $(cat $LIST); do
+                SIZE=$(( ($(tput cols)/2) - 1))
+                sed -n "${count}p" $INFO | sed -e "s/.\{${SIZE}\}/&\n/g" > $TEXT
+                download $link $COVER
+                clear
+                chafa $COVER > $IMAGE
+                display $IMAGE $TEXT
+                let count++
+                echo -e "\nPress Enter to continue..." && read
+                clear
+        done
+        [[ $count == 1 ]] && echo "no books found"; exit 0;
+        banner "no books left"
+        rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT $LOGO_IMG $LOGO_CHF $DESC 2>/dev/null
 }
 
 main
