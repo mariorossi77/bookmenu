@@ -8,6 +8,7 @@ INFO="/tmp/bookmenu_info"
 COVER="/tmp/bookmenu_cover"
 IMAGE="/tmp/bookmenu_image"
 TEXT="/tmp/bookmenu_text"
+EXT="epub"
 LOGO_URL="https://book4you.org/img/logo.zlibrary.png"
 LOGO_IMG="/tmp/bookmenu_logo"
 LOGO="/tmp/bookmenu_logo_chf"
@@ -37,7 +38,7 @@ main() {
 	banner "BOOKMENU v${VERSION}"
 	read -p "search books: " QUERY
 	echo "downloading index..."
-	curl -s "${URL}${QUERY}/?extension=epub" > $INDEX # GET INDEX
+	curl -s "${URL}${QUERY}/?extension=${EXT}" > $INDEX # GET INDEX
 	grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST # GET COVERS
 	grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO # GET INFO
 	for link in $(cat $LIST); do
