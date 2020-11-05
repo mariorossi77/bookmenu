@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="1.3"
+VERSION="1.0"
 URL="https://1lib.eu/s/"
 INDEX="/tmp/bookmenu_index"
 LIST="/tmp/bookmenu_list"
