@@ -1,59 +1,111 @@
 #!/usr/bin/env bash
 
-VERSION="1.3"
-URL="https://1lib.eu/s/"
+VERSION="1.4"
+FORMAT="epub"
+URL="https://1lib.eu/s"
 INDEX="/tmp/bookmenu_index"
 LIST="/tmp/bookmenu_list"
 INFO="/tmp/bookmenu_info"
 COVER="/tmp/bookmenu_cover"
 IMAGE="/tmp/bookmenu_image"
 TEXT="/tmp/bookmenu_text"
-LOGO_URL="https://book4you.org/img/logo.zlibrary.png"
-LOGO_IMG="/tmp/bookmenu_logo"
-LOGO="/tmp/bookmenu_logo_chf"
-QUIET="true" # set to false if you have a slow connection
+QUIET="false"
+OUTPUT="$HOME/Downloads"
 
-download() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget -q --show-progress $1 -O $2; }
+command -v chafa >/dev/null || (echo "missing \"chafa\" dependency" exit 1; exit 1)
+
+load() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget $1 -O $2; }
 
 display() {
         paste $1 $2 | while read OUTPUT; do
                 echo "$OUTPUT"
-                sleep .02
+                sleep .05
         done
 }
 
 banner() {
         clear
-        echo "loading..."
-        download $LOGO_URL $LOGO_IMG
-        chafa $LOGO_IMG > $LOGO
-        clear
-        display $LOGO
-        echo -e "\n$1\n"
+        echo """                   ______ ______
+                 _/      Y      \_
+                // ~~ ~~ | ~~ ~  \\\\
+               // ~ ~ ~~ | ~~~ ~~ \\\\
+              //________.|.________\\\\
+             '----------'-'----------'
+                   BOOKMENU v${VERSION}"""
+
+        echo -e "$1\n"
+}
+
+download() {
+        address=$(grep 'href="/book' $INDEX | cut -d'"' -f2 | tail -n +2 | sed -n "${1}p")
+        wget -q --show-progress "$URL/$address" -O "$OUTPUT/${TEXT%% *}.$FORMAT"
 }
 
 main() {
+        local next=1
         local count=1
-        banner "BOOKMENU v${VERSION}"
+        rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT 2>/dev/null
+        banner
         read -p "search books: " QUERY
-        echo "downloading index..."
-        curl -s "${URL}${QUERY%% *}/?extension=epub" > $INDEX # GET INDEX
-        grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST # GET COVERS
-        grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO # GET INFO
-        for link in $(cat $LIST); do
-                SIZE=$(( ($(tput cols)/2) - 1))
-                sed -n "${count}p" $INFO | sed -e "s/.\{${SIZE}\}/&\n/g" > $TEXT
-                download $link $COVER
+        trap '' 2 && tput civis
+        echo "loading..."
+        curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX
+        grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST
+        grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO
+        max=$(wc -l $LIST | cut -d' ' -f1)
+        if [[ -s $LIST ]]; then
+                while :; do
+                        let limit=$max+1
+                        [[ $count == $limit ]] && break
+                        link=$(sed -n "${count}p" $LIST)
+                        size=$(( ($(tput cols)/2) - 1))
+                        sed -n "${count}p" $INFO | sed -e "s/.\{${size}\}/&\n/g" > $TEXT
+                        load $link $COVER
+                        clear
+                        chafa $COVER > $IMAGE
+                        display $IMAGE $TEXT
+                        [[ $count != 1 ]] && echo -e "\n[${count}/${max}] [p]revious [n]ext [d]ownload [q]uit\n"
+                        [[ $count == 1 ]] && echo -e "\n[${count}/${max}] [n]ext [d]ownload [q]uit\n"
+                        while :; do
+                                read -N 1 -s choice
+                                case $choice in
+                                        n)
+                                        break;;
+                                        p)
+                                        if [[ $count != 1 ]]; then
+                                                next=0
+                                                let count--
+                                                break
+                                        fi
+                                        ;;
+                                        d)
+                                        echo -e "download is not yet implemented"
+                                        #download $count
+                                        ;;
+                                        q)
+                                        end=1
+                                        echo -e "\n"
+                                        break;;
+                                        *)
+                                        ;;
+                                esac
+                        done
+                [[ $end == 1 ]] && break
+                if [[ $next == 1 ]]; then
+                        let count++
+                fi
+                next=1
                 clear
-                chafa $COVER > $IMAGE
-                display $IMAGE $TEXT
-                let count++
-                echo -e "\nPress Enter to continue..." && read
-                clear
-        done
-        [[ $count == 1 ]] && echo "no books found"; exit 0;
-        banner "no books left"
-        rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT $LOGO_IMG $LOGO_CHF $DESC 2>/dev/null
+                done
+        fi
+        tput cnorm && trap 2
+        if [[ $end != 1 ]]; then
+                if [[ $count == 1 ]]; then
+                        banner "\nno books found"
+                else
+                        banner "\nno books left"
+                fi
+        fi
 }
 
 main
