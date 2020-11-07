@@ -79,7 +79,7 @@ main() {
                                         fi
                                         ;;
                                         d)
-                                        echo -e "download is not yet implemented"
+                                        echo -e "download is a work in progress"
                                         #download $count
                                         ;;
                                         q)
@@ -91,9 +91,7 @@ main() {
                                 esac
                         done
                 [[ $end == 1 ]] && break
-                if [[ $next == 1 ]]; then
-                        let count++
-                fi
+                [[ $next == 1 ]] && let count++
                 next=1
                 clear
                 done
