@@ -1,6 +1,7 @@
 # bookmenu
-CLI for Library Genesis
+Assert terminal supremacy with this CLI book browser and downloader.
 
 # requirements
-chafa  
-wget >= 1.16
+- tput
+- chafa
+- wget
