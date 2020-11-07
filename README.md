@@ -1,5 +1,5 @@
 # bookmenu
-Assert terminal supremacy with this CLI books browser and downloader.
+Assert supremacy with this CLI books browser and downloader.
 
 # requirements
 - tput
