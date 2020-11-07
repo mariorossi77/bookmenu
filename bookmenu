@@ -99,9 +99,9 @@ main() {
         tput cnorm && trap 2
         if [[ $end != 1 ]]; then
                 if [[ $count == 1 ]]; then
-                        banner "\nno books found"
+                        banner "\n\nno books found"
                 else
-                        banner "\nno books left"
+                        banner "\n\nno books left"
                 fi
         fi
 }
