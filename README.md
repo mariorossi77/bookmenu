@@ -1,6 +1,5 @@
 # bookmenu
-Command line interface books browser and downloader.  
-*"Assert terminal supremacy on em virgin GUI users" - Gandhi*
+Command line interface books browser and downloader for Library Genesis.
 
 ![preview](preview.gif)
 
