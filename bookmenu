@@ -52,7 +52,7 @@ main() {
         curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX
         grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST
         grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO
-        max=$(wc -l $LIST | cut -d' ' -f1)
+        local max=$(wc -l $LIST | cut -d' ' -f1)
         if [[ -s $LIST ]]; then
                 while :; do
                         let limit=$max+1
