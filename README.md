@@ -8,4 +8,3 @@ Command line interface books browser and downloader.
 - tput
 - chafa
 - wget
-- KCTF{r3qu1r3m3nts_54t15f13d}
