@@ -1,6 +1,6 @@
 # bookmenu
 Command line interface books browser and downloader.  
-Assert terminal supremacy with this Chad CLI on em virgin GUI users.
+Assert terminal supremacy on em virgin GUI users with this Chad CLI.
 
 # requirements
 - tput
