@@ -1,12 +1,8 @@
 # bookmenu
-CLI books browser and downloader.
+Command line interface books browser and downloader.
+Assert terminal supremacy with this Chad CLI on em virgin GUI users.
 
 # requirements
 - tput
 - chafa
 - wget
-
-# why  
-- the Chad CLI vs the virgin GUI
-- assert supremacy
-- flex
