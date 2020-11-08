@@ -12,7 +12,10 @@ TEXT="/tmp/bookmenu_text"
 QUIET="false"
 OUTPUT="$HOME/Downloads"
 
-command -v chafa >/dev/null || echo "missing \"chafa\" dependency" && exit 1
+if ! command -v chafa >/dev/nullecho; then
+        echo "missing \"chafa\" dependency"
+        exit1
+fi
 
 load() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget $1 -O $2; }
 
