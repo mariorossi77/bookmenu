@@ -12,7 +12,7 @@ TEXT="/tmp/bookmenu_text"
 QUIET="false"
 OUTPUT="$HOME/Downloads"
 
-if ! command -v chafa >/dev/nullecho; then
+if ! command -v chafa >/dev/null; then
         echo "missing \"chafa\" dependency"
         exit1
 fi
