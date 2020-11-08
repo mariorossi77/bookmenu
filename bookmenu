@@ -14,7 +14,7 @@ OUTPUT="$HOME/Downloads"
 
 if ! command -v chafa >/dev/null; then
         echo "missing \"chafa\" dependency"
-        exit1
+        exit 1
 fi
 
 load() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget $1 -O $2; }
