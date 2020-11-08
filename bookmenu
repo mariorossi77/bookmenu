@@ -100,6 +100,7 @@ main() {
         if [[ $end != 1 ]]; then
                 if [[ $count == 1 ]]; then
                         banner "\n\nno books found"
+                        exit 1
                 else
                         banner "\n\nno books left"
                 fi
