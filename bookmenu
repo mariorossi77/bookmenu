@@ -47,7 +47,6 @@ main() {
         rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT 2>/dev/null
         banner
         read -p "search books: " QUERY
-        trap '' 2 && tput civis
         echo "loading..."
         curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX
         grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST
@@ -96,7 +95,6 @@ main() {
                 clear
                 done
         fi
-        tput cnorm && trap 2
         if [[ $end != 1 ]]; then
                 if [[ $count == 1 ]]; then
                         banner "\n\nno books found"
