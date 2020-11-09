@@ -1,47 +1,54 @@
 #!/usr/bin/env bash
 
-declare VERSION="1.5"
-declare FORMAT="epub"
-declare QUIET="true"
-declare URL="https://1lib.eu/s"
+declare VERSION="1.6" # https://github.com/kusky3/bookmenu
+declare FORMAT="epub" # books format to search and download
+declare QUIET="false" # true or false or hide to show progress bar
+declare OUT="$HOME/Downloads" # path to save books
+declare URL="https://1lib.eu/s" # covers and info
+declare URL2="http://library.lol/main" # download links
+declare URL3="https://ipfs.io/ipfs" # final upstream
 declare INDEX="/tmp/bookmenu_index"
 declare LIST="/tmp/bookmenu_list"
 declare INFO="/tmp/bookmenu_info"
 declare COVER="/tmp/bookmenu_cover"
 declare IMAGE="/tmp/bookmenu_image"
 declare TEXT="/tmp/bookmenu_text"
-declare OUTPUT="$HOME/Downloads"
 
 command -v chafa >/dev/null || { echo "missing \"chafa\" dependency"; exit 1; }
 
+get_index() { curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX; }
+
+get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
+
+get_info() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO; }
+
+termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
+
 load() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget $1 -O $2; }
 
-display() { paste $1 $2 | while read OUTPUT; do echo "$OUTPUT"; sleep .05; done; }
+display() { paste $1 $2 | while read buffer; do echo "$buffer"; sleep .05; done; }
 
-banner() {
-        clear; echo "                   ______ ______
+save() { echo "loading...";
+        hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
+        upstream=$(grep $URL3 <<< $(curl -s $URL2/$hashsum) | cut -d'"' -f2)
+        [[ -z $1 ]] && name=$hashsum || name=$1 # set filename to hashsum if user input is empty
+        clear; load "$upstream" "$OUT/$name.$FORMAT"; }
+
+prompt() { echo -ne "\n[${count}/${max}] $1 [n]ext [d]ownload [q]uit\n"; }
+
+banner() { clear; echo "                   ______ ______
                  _/      Y      \_
                 // ~~ ~~ | ~~ ~  \\\\
                // ~ ~ ~~ | ~~~ ~~ \\\\
               //________.|.________\\\\
              '----------'-'----------'
-                   BOOKMENU v${VERSION}"
-        echo -e "\n$1\n"
-}
-
-download() {
-        local address=$(grep 'href="/book' $INDEX | cut -d'"' -f2 | tail -n +2 | sed -n "${1}p")
-        wget -q --show-progress "$URL/$address" -O "$OUTPUT/${TEXT%% *}.$FORMAT"
-}
+                   BOOKMENU v${VERSION}"; echo -e "\n$1\n"; }
 
 main() {
-        next=1; count=1; max=0;
+        next=1; count=1; max=0; down=0;
         rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT 2>/dev/null
         banner; read -p "search books: " QUERY; echo "loading..."
-        curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX
-        grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST
-        grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO
-        max=$(wc -l $LIST | cut -d' ' -f1)
+        get_index; get_list; get_info
         if [[ -s $LIST ]]; then
                 while :; do
                         let limit=$max+1
@@ -49,9 +56,10 @@ main() {
                         link=$(sed -n "${count}p" $LIST)
                         size=$(( ($(tput cols)/2) - 1))
                         sed -n "${count}p" $INFO | sed -e "s/.\{${size}\}/&\n/g" > $TEXT
-                        stty -echo; tput civis; trap '' 2
+                        termset; clear
                         load $link $COVER; clear; chafa $COVER > $IMAGE; display $IMAGE $TEXT
-                        [[ $count == 1 ]] && echo -ne "\n[${count}/${max}] [n]ext [d]ownload [q]uit" || echo -ne "\n[${count}/${max}] [p]revious [n]ext [d]ownload [q]uit"
+                        [[ $count == 1 ]] && prompt || prompt "[p]revious"
+                        [[ $down == $count ]] && echo "saved to: \"$OUT/$name.$FORMAT\""
                         while :; do
                                 read -N 1 -s choice
                                 case $choice in
@@ -61,9 +69,8 @@ main() {
                                         [[ $count != 1 ]] && { next=0; let count--; break; }
                                         ;;
                                         d)
-                                        echo "download is a work in progress"
-                                        #download $count
-                                        ;;
+                                        termset reset; read -p "filename: " filename; save "$filename"; termset;
+                                        next=0; down=$count; break;;
                                         q)
                                         end=1; break;;
                                         *)
@@ -73,7 +80,7 @@ main() {
                 [[ $end == 1 ]] && break; [[ $next == 1 ]] && let count++
                 next=1; clear; done
         fi
-        stty echo; tput cnorm; trap 2
+        termset reset
         [[ $end != 1 ]] && [[ $count == 1 ]] && { banner "\n\nno books found"; exit 1; } || clear
 }
 
