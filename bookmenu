@@ -1,60 +1,47 @@
 #!/usr/bin/env bash
 
-VERSION="1.4"
-FORMAT="epub"
-URL="https://1lib.eu/s"
-INDEX="/tmp/bookmenu_index"
-LIST="/tmp/bookmenu_list"
-INFO="/tmp/bookmenu_info"
-COVER="/tmp/bookmenu_cover"
-IMAGE="/tmp/bookmenu_image"
-TEXT="/tmp/bookmenu_text"
-QUIET="false"
-OUTPUT="$HOME/Downloads"
+declare VERSION="1.5"
+declare FORMAT="epub"
+declare QUIET="true"
+declare URL="https://1lib.eu/s"
+declare INDEX="/tmp/bookmenu_index"
+declare LIST="/tmp/bookmenu_list"
+declare INFO="/tmp/bookmenu_info"
+declare COVER="/tmp/bookmenu_cover"
+declare IMAGE="/tmp/bookmenu_image"
+declare TEXT="/tmp/bookmenu_text"
+declare OUTPUT="$HOME/Downloads"
 
-if ! command -v chafa >/dev/null; then
-        echo "missing \"chafa\" dependency"
-        exit 1
-fi
+command -v chafa >/dev/null || { echo "missing \"chafa\" dependency"; exit 1; }
 
 load() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget $1 -O $2; }
 
-display() {
-        paste $1 $2 | while read OUTPUT; do
-                echo "$OUTPUT"
-                sleep .05
-        done
-}
+display() { paste $1 $2 | while read OUTPUT; do echo "$OUTPUT"; sleep .05; done; }
 
 banner() {
-        clear
-        echo """                   ______ ______
+        clear; echo "                   ______ ______
                  _/      Y      \_
                 // ~~ ~~ | ~~ ~  \\\\
                // ~ ~ ~~ | ~~~ ~~ \\\\
               //________.|.________\\\\
              '----------'-'----------'
-                   BOOKMENU v${VERSION}"""
-
-        echo -e "$1\n"
+                   BOOKMENU v${VERSION}"
+        echo -e "\n$1\n"
 }
 
 download() {
-        address=$(grep 'href="/book' $INDEX | cut -d'"' -f2 | tail -n +2 | sed -n "${1}p")
+        local address=$(grep 'href="/book' $INDEX | cut -d'"' -f2 | tail -n +2 | sed -n "${1}p")
         wget -q --show-progress "$URL/$address" -O "$OUTPUT/${TEXT%% *}.$FORMAT"
 }
 
 main() {
-        local next=1
-        local count=1
+        next=1; count=1; max=0;
         rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT 2>/dev/null
-        banner
-        read -p "search books: " QUERY
-        echo "loading..."
+        banner; read -p "search books: " QUERY; echo "loading..."
         curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX
         grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST
         grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO
-        local max=$(wc -l $LIST | cut -d' ' -f1)
+        max=$(wc -l $LIST | cut -d' ' -f1)
         if [[ -s $LIST ]]; then
                 while :; do
                         let limit=$max+1
@@ -62,50 +49,32 @@ main() {
                         link=$(sed -n "${count}p" $LIST)
                         size=$(( ($(tput cols)/2) - 1))
                         sed -n "${count}p" $INFO | sed -e "s/.\{${size}\}/&\n/g" > $TEXT
-                        load $link $COVER
-                        clear
-                        chafa $COVER > $IMAGE
-                        display $IMAGE $TEXT
-                        [[ $count != 1 ]] && echo -e "\n[${count}/${max}] [p]revious [n]ext [d]ownload [q]uit\n"
-                        [[ $count == 1 ]] && echo -e "\n[${count}/${max}] [n]ext [d]ownload [q]uit\n"
+                        stty -echo; tput civis; trap '' 2
+                        load $link $COVER; clear; chafa $COVER > $IMAGE; display $IMAGE $TEXT
+                        [[ $count == 1 ]] && echo -ne "\n[${count}/${max}] [n]ext [d]ownload [q]uit" || echo -ne "\n[${count}/${max}] [p]revious [n]ext [d]ownload [q]uit"
                         while :; do
                                 read -N 1 -s choice
                                 case $choice in
                                         n)
                                         break;;
                                         p)
-                                        if [[ $count != 1 ]]; then
-                                                next=0
-                                                let count--
-                                                break
-                                        fi
+                                        [[ $count != 1 ]] && { next=0; let count--; break; }
                                         ;;
                                         d)
-                                        echo -e "download is a work in progress"
+                                        echo "download is a work in progress"
                                         #download $count
                                         ;;
                                         q)
-                                        end=1
-                                        echo -e "\n"
-                                        break;;
+                                        end=1; break;;
                                         *)
                                         ;;
                                 esac
                         done
-                [[ $end == 1 ]] && break
-                [[ $next == 1 ]] && let count++
-                next=1
-                clear
-                done
+                [[ $end == 1 ]] && break; [[ $next == 1 ]] && let count++
+                next=1; clear; done
         fi
-        if [[ $end != 1 ]]; then
-                if [[ $count == 1 ]]; then
-                        banner "\n\nno books found"
-                        exit 1
-                else
-                        banner "\n\nno books left"
-                fi
-        fi
+        stty echo; tput cnorm; trap 2
+        [[ $end != 1 ]] && [[ $count == 1 ]] && { banner "\n\nno books found"; exit 1; } || clear
 }
 
 main
