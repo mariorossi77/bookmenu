@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-declare VERSION="1.6" # https://github.com/kusky3/bookmenu
+declare VERSION="1.6"
 declare FORMAT="epub" # books format to search and download
 declare QUIET="false" # true or false to hide or show progress bar
 declare OUT="$HOME/Downloads" # path to save books
