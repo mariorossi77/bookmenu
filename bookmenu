@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-declare VERSION="1.6"
+declare VERSION="1.7"
 declare FORMAT="epub" # books format to search and download
-declare QUIET="false" # true or false to hide or show progress bar
+declare QUIET="false" # true or false or hide to show progress bar
 declare OUT="$HOME/Downloads" # path to save books
 declare URL="https://1lib.eu/s" # covers and info
 declare URL2="http://library.lol/main" # download links
@@ -31,6 +31,7 @@ display() { paste $1 $2 | while read buffer; do echo "$buffer"; sleep .05; done;
 save() { echo "loading...";
         hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
         upstream=$(grep $URL3 <<< $(curl -s $URL2/$hashsum) | cut -d'"' -f2)
+        [[ -z $upstream ]] && { fail=$count; down=0; return 1; }
         [[ -z $1 ]] && name=$hashsum || name=$1 # set filename to hashsum if user input is empty
         clear; load "$upstream" "$OUT/$name.$FORMAT"; }
 
@@ -45,7 +46,7 @@ banner() { clear; echo "                   ______ ______
                    BOOKMENU v${VERSION}"; echo -e "\n$1\n"; }
 
 main() {
-        next=1; count=1; max=0; down=0;
+        next=1; count=1; max=0; down=0; fail=0;
         rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT 2>/dev/null
         banner; read -p "search books: " QUERY; echo "loading..."
         get_index; get_list; get_info
@@ -56,9 +57,9 @@ main() {
                         link=$(sed -n "${count}p" $LIST)
                         size=$(( ($(tput cols)/2) - 1))
                         sed -n "${count}p" $INFO | sed -e "s/.\{${size}\}/&\n/g" > $TEXT
-                        termset; clear
-                        load $link $COVER; clear; chafa $COVER > $IMAGE; display $IMAGE $TEXT
+                        clear; load $link $COVER; clear; chafa $COVER > $IMAGE; termset; display $IMAGE $TEXT
                         [[ $count == 1 ]] && prompt || prompt "[p]revious"
+                        [[ $fail == $count ]] && echo "ipfs download unavailable for this book"
                         [[ $down == $count ]] && echo "saved to: \"$OUT/$name.$FORMAT\""
                         while :; do
                                 read -N 1 -s choice
@@ -69,8 +70,8 @@ main() {
                                         [[ $count != 1 ]] && { next=0; let count--; break; }
                                         ;;
                                         d)
-                                        termset reset; read -p "filename: " filename; save "$filename"; termset;
-                                        next=0; down=$count; break;;
+                                        termset reset; read -p "filename: " filename; save "$filename"; termset
+                                        [[ $fail == 0 ]] && down=$count; next=0; break;;
                                         q)
                                         end=1; break;;
                                         *)
