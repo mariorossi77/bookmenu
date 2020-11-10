@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-declare VERSION="1.9"
 declare FORMAT="" # e.g. epub, mobi
 declare QUIET="false" # true or false or hide to show progress bar
 declare OUT="$HOME/Downloads" # path to save books
-declare URL="https://1lib.eu/s" # covers and info
+declare URL1="https://1lib.eu/s" # covers and info
 declare URL2="http://library.lol/main" # download links
 declare URL3="https://ipfs.io/ipfs" # final upstream
 declare INDEX="/tmp/bookmenu_index"
