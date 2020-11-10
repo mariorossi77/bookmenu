@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-declare VERSION="1.7"
-declare FORMAT="epub" # books format to search and download
+declare VERSION="1.8"
+declare FORMAT="" # e.g. epub, mobi or empty to search all
 declare QUIET="false" # true or false or hide to show progress bar
 declare OUT="$HOME/Downloads" # path to save books
 declare URL="https://1lib.eu/s" # covers and info
@@ -9,6 +9,7 @@ declare URL2="http://library.lol/main" # download links
 declare URL3="https://ipfs.io/ipfs" # final upstream
 declare INDEX="/tmp/bookmenu_index"
 declare LIST="/tmp/bookmenu_list"
+declare TITLE="/tmp/bookmenu_title"
 declare INFO="/tmp/bookmenu_info"
 declare COVER="/tmp/bookmenu_cover"
 declare IMAGE="/tmp/bookmenu_image"
@@ -20,11 +21,13 @@ get_index() { curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX; }
 
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
 
-get_info() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $INFO; }
+get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $TITLE; }
+
+get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
 
 termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
 
-load() { [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget $1 -O $2; }
+load() { clear; [[ $QUIET == "true" ]] && wget -q $1 -O $2 || wget $1 -O $2; clear; }
 
 display() { paste $1 $2 | while read buffer; do echo "$buffer"; sleep .05; done; }
 
@@ -33,9 +36,9 @@ save() { echo "loading...";
         upstream=$(grep $URL3 <<< $(curl -s $URL2/$hashsum) | cut -d'"' -f2)
         [[ -z $upstream ]] && { fail=$count; down=0; return 1; }
         [[ -z $1 ]] && name=$hashsum || name=$1 # set filename to hashsum if user input is empty
-        clear; load "$upstream" "$OUT/$name.$FORMAT"; }
+        clear; load "$upstream" "$OUT/$name.$extension"; }
 
-prompt() { echo -ne "\n[${count}/${max}] $1 [n]ext [d]ownload [q]uit\n"; }
+prompt() { echo -ne "\n[${count}/${max}] $1[n]ext [d]ownload [q]uit\n"; }
 
 banner() { clear; echo "                   ______ ______
                  _/      Y      \_
@@ -46,21 +49,25 @@ banner() { clear; echo "                   ______ ______
                    BOOKMENU v${VERSION}"; echo -e "\n$1\n"; }
 
 main() {
-        next=1; count=1; max=0; down=0; fail=0;
-        rm $INDEX $LIST $INFO $COVER $IMAGE $TEXT 2>/dev/null
-        banner; read -p "search books: " QUERY; echo "loading..."
-        get_index; get_list; get_info
+        next=1; count=1; max=0; down=0; fail=0; size=0;
+        rm $INDEX $LIST $TITLE $DETAIL $INFO $COVER $IMAGE $TEXT 2>/dev/null
+        banner; read -p "search: " QUERY; echo "loading..."
+        get_index; get_list; get_title; get_info
         if [[ -s $LIST ]]; then
                 while :; do
                         let limit=$max+1
                         [[ $count == $limit ]] && break
+                        space=$(( ($(tput cols)/2) - 1))
                         link=$(sed -n "${count}p" $LIST)
-                        size=$(( ($(tput cols)/2) - 1))
-                        sed -n "${count}p" $INFO | sed -e "s/.\{${size}\}/&\n/g" > $TEXT
-                        clear; load $link $COVER; clear; chafa $COVER > $IMAGE; termset; display $IMAGE $TEXT
-                        [[ $count == 1 ]] && prompt || prompt "[p]revious"
+                        data=$(sed -n "${count}p" $INFO)
+                        extension=$(cut -d"," -f1 <<< $data)
+                        size=$(cut -d"," -f2 <<< $data)
+                        sed -n "${count}p" $TITLE | sed -e "s/.\{${space}\}/&\n/g" > $TEXT
+                        echo -e "\nFormat: $extension\nSize:$size" >> $TEXT
+                        load $link $COVER; chafa $COVER > $IMAGE; termset; display $IMAGE $TEXT
+                        [[ $count == 1 ]] && prompt || prompt "[p]revious "
                         [[ $fail == $count ]] && echo "ipfs download unavailable for this book"
-                        [[ $down == $count ]] && echo "saved to: \"$OUT/$name.$FORMAT\""
+                        [[ $down == $count ]] && echo "saved to: \"$OUT/$name.$extension\""
                         while :; do
                                 read -N 1 -s choice
                                 case $choice in
