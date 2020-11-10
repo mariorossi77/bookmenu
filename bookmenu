@@ -16,7 +16,7 @@ declare TEXT="/tmp/bookmenu_text"
 
 command -v chafa >/dev/null || { echo "missing \"chafa\" dependency"; exit 1; }
 
-get_index() { curl -s "$URL/${QUERY}/?extension=$FORMAT" > $INDEX; }
+get_index() { curl -s "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
 
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
 
