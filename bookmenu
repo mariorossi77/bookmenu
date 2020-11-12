@@ -46,7 +46,7 @@ banner() { clear; echo "                   ______ ______
                // ~ ~ ~~ | ~~~ ~~ \\\\
               //________.|.________\\\\
              '----------'-'----------'
-                   BOOKMENU v${VERSION}"; echo -e "\n$1\n"; }
+                      BOOKMENU"; echo -e "\n$1\n"; }
 
 main() {
         next=1; count=1; max=0; down=0; fail=0; size=0;
