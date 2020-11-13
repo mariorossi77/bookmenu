@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 declare FORMAT="" # e.g. epub, mobi
-declare QUIET="false" # true or false or hide to show progress bar
+declare QUIET="false" # true or false to hide or show progress bar
 declare OUT="$HOME/Downloads" # path to save books
 declare URL1="https://1lib.eu/s" # covers and info
 declare URL2="http://library.lol/main" # download links
