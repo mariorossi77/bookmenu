@@ -28,7 +28,7 @@ termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput 
 
 load() { clear; [[ $QUIET == "true" ]] && wget -q "$1" -O "$2" || wget "$1" -O "$2"; clear; }
 
-display() { paste $1 $2 | while read buffer; do echo "$buffer"; done; }
+display() { paste $1 $2; }
 
 save() { echo "loading...";
         hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
