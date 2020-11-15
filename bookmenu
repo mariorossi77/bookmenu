@@ -17,17 +17,12 @@ TEXT="/tmp/bookmenu_text"
 command -v chafa >/dev/null || { echo "missing \"chafa\" dependency"; exit 1; }
 
 get_index() { curl -s "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
-
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
-
 get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $TITLE; }
-
 get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
-
 termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
-
 load() { clear; [[ $QUIET == "true" ]] && wget -q "$1" -O "$2" || wget "$1" -O "$2"; clear; }
-
+prompt() { echo -ne "\n[${count}/${max}] $1 [d]ownload [q]uit\n"; }
 display() { paste $1 $2; }
 
 save() { echo "loading...";
@@ -38,7 +33,6 @@ save() { echo "loading...";
         [[ -z $1 ]] && name=$hashsum || name=$1 # set filename to hashsum if user input is empty
         clear; load "$upstream" "$OUT/$name.$extension"; }
 
-prompt() { echo -ne "\n[${count}/${max}] $1 [d]ownload [q]uit\n"; }
 
 banner() { clear; echo "                   ______ ______
                  _/      Y      \_
