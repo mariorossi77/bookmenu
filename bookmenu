@@ -63,7 +63,7 @@ main() {
                         [[ $max == "$count" ]] && prompt "[p]reviouis"
                         [[ $count != 1 ]] && [[ $max != "$count" ]] && prompt "[p]revious [n]ext"
                         [[ $fail == "$count" ]] && echo "ipfs download unavailable for this book"
-                        [[ $down == "$count" ]] && echo "saved to: \"$OUT/$name.$extension\""
+                        [[ $down == "$count" ]] && echo "saved to: \"$OUT/$name.${extension,,}\""
                         while :; do
                                 read -N 1 -s choice
                                 case $choice in
