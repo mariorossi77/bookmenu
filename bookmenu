@@ -60,9 +60,7 @@ main() {
                         sed -n "${count}p" $TITLE | sed -e "s/.\{${space}\}/&\n/g" > $TEXT
                         echo -e "\nAuthor: $author\nFormat: $extension\nSize:$size" >> $TEXT
                         load $link $COVER; chafa $COVER > $IMAGE; termset; display $IMAGE $TEXT
-                        [[ $count == 1 ]] && prompt "[n]ext"
-                        [[ $max == "$count" ]] && prompt "[p]reviouis"
-                        [[ $count != 1 ]] && [[ $max != "$count" ]] && prompt "[p]revious [n]ext"
+                        [[ $max == 1 ]] && prompt || { [[ $count == 1 ]] && prompt "[n]ext"; [[ $max == "$count" ]] && prompt "[p]reviouis"; [[ $count != 1 ]] && [[ $max != "$count" ]] && prompt "[p]revious [n]ext"; }
                         [[ $fail == "$count" ]] && echo "ipfs download unavailable for this book"
                         [[ $down == "$count" ]] && echo "saved to: \"$OUT/$name.${extension,,}\""
                         while :; do
