@@ -28,7 +28,6 @@ display() { paste $1 $2; }
 save() { echo "loading...";
         hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
         upstream=$(grep $URL3 <<< "$(curl -s $URL2/"$hashsum")" | cut -d'"' -f2)
-        echo $upstream; sleep 3
         [[ -z $upstream ]] && { fail=$count; down=0; return 1; }
         [[ -z $1 ]] && name=$hashsum || name=$1 # set filename to hashsum if user input is empty
         clear; load "$upstream" "$OUT/$name.${extension,,}"; }
