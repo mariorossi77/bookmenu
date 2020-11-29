@@ -23,7 +23,6 @@ get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
 termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
 load() { clear; [[ $QUIET == "true" ]] && wget -q "$1" -O "$2" || wget "$1" -O "$2"; clear; }
 prompt() { echo -ne "\n[${count}/${max}] ${1}[d]ownload [q]uit\n"; }
-display() { paste $1 $2; }
 
 save() { echo "loading...";
         hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
@@ -58,7 +57,7 @@ main() {
                         size=$(cut -d"," -f2 <<< $data)
                         sed -n "${count}p" $TITLE | sed -e "s/.\{${space}\}/&\n/g" > $TEXT
                         echo -e "\nAuthor: $author\nFormat: $extension\nSize:$size" >> $TEXT
-                        load $link $COVER; chafa $COVER > $IMAGE; termset; display $IMAGE $TEXT
+                        load $link $COVER; chafa $COVER > $IMAGE; termset; paste $IMAGE $TEXT
                         [[ $max == 1 ]] && prompt || { [[ $count == 1 ]] && prompt "[n]ext "; [[ $max == "$count" ]] && prompt "[p]revious "; [[ $count != 1 ]] && [[ $max != "$count" ]] && prompt "[p]revious [n]ext "; }
                         [[ $fail == "$count" ]] && echo "ipfs download unavailable for this book"
                         [[ $down == "$count" ]] && echo "saved to: \"$OUT/$name.${extension,,}\""
