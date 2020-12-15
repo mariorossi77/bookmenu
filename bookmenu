@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 FORMAT="" # e.g. epub, mobi
-QUIET="false" # hide or show progress bar
 OUT="$HOME/Downloads" # path to save books
-URL1="https://1lib.eu/s" # covers and info - if it doesn't work use another mirror
+URL1="https://1lib.eu/s" # covers and info
 URL2="http://library.lol/main" # download links
 URL3="https://ipfs.io/ipfs" # final upstream
 INDEX="/tmp/bookmenu_index"
@@ -13,15 +12,17 @@ INFO="/tmp/bookmenu_info"
 COVER="/tmp/bookmenu_cover"
 IMAGE="/tmp/bookmenu_image"
 TEXT="/tmp/bookmenu_text"
+QUERY=$@
 
-command -v chafa >/dev/null || { echo "missing \"chafa\" dependency"; exit 1; }
+[[ -z $QUERY ]] && { echo "usage: bookmenu {QUERY}"; exit 2; }
+command -v chafa >/dev/null || { echo "missing \"notcurses\" dependency"; exit 2; }
 
 get_index() { curl -s "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
 get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $TITLE; }
 get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
 termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
-load() { clear; [[ $QUIET == "true" ]] && wget -q "$1" -O "$2" || wget "$1" -O "$2"; clear; }
+load() { clear; wget "$1" -O "$2"; clear; }
 prompt() { echo -ne "\n[${count}/${max}] ${1}[d]ownload [q]uit\n"; }
 
 save() { echo "loading...";
@@ -31,19 +32,9 @@ save() { echo "loading...";
         [[ -z $1 ]] && name=$hashsum || name=$1 # set filename to hashsum if user input is empty
         clear; load "$upstream" "$OUT/$name.${extension,,}"; }
 
-
-banner() { clear; echo "                   ______ ______
-                 _/      Y      \_
-                // ~~ ~~ | ~~ ~  \\\\
-               // ~ ~ ~~ | ~~~ ~~ \\\\
-              //________.|.________\\\\
-             '----------'-'----------'
-                      BOOKMENU"; echo -e "\n$1\n"; }
-
 main() {
         next=1; count=1; max=0; down=0; fail=0; size=0;
         rm $INDEX $LIST $TITLE $INFO $COVER $IMAGE $TEXT 2>/dev/null
-        banner; read -p "search: " QUERY; echo "loading..."
         get_index; get_list; get_title; get_info
         if [[ -s $LIST ]]; then
                 while :; do
