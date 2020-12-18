@@ -14,7 +14,7 @@ IMAGE="/tmp/bookmenu_image"
 TEXT="/tmp/bookmenu_text"
 QUERY=$@
 
-[[ -z $QUERY ]] && { echo "usage: bookmenu {QUERY}"; exit 2; }
+[[ -z $QUERY ]] && { echo "usage: bookmenu {query}"; exit 2; }
 command -v chafa >/dev/null || { echo "missing \"chafa\" dependency"; exit 2; }
 
 get_index() { curl -s "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
