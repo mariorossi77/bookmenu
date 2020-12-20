@@ -73,7 +73,7 @@ main() {
                 next=1; clear; done
         fi
         termset reset
-        [[ $end != 1 ]] && [[ $count == 1 ]] && { echo "\n\nno books found"; exit 1; } || clear
+        [[ $end != 1 ]] && [[ $count == 1 ]] && { echo -e "\n\nno books found"; exit 1; } || clear
 }
 
 main
