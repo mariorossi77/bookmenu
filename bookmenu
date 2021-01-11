@@ -17,7 +17,7 @@ QUERY=$@
 [[ -z $QUERY ]] && { echo "usage: bookmenu {query}"; exit 2; }
 command -v chafa >/dev/null || { echo "missing \"chafa\" dependency"; exit 2; }
 
-get_index() { curl -s "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
+get_index() { wget -O - -q "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
 get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +3 | sed -e "s/...$//" > $TITLE; }
 get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
