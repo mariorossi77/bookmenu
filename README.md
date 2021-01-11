@@ -9,5 +9,4 @@ Inspired by: https://lbry.tv/@metalx1000:c/retro-style-most-wanted:2
 - wget
 
 # installation
-
-```yay -S bookmenu-git```
+Arch Linux: ```yay -S bookmenu-git || ${your_aur_helper} -S bookmenu-git```
