@@ -7,3 +7,7 @@ Inspired by: https://lbry.tv/@metalx1000:c/retro-style-most-wanted:2
 # requirements
 - chafa
 - wget
+
+# installation
+
+```yay -S bookmenu-git```
