@@ -13,7 +13,7 @@ Arch Linux: ```yay -S bookmenu-git || ${your_aur_helper} -S bookmenu-git```
 
 ## usage
 Edit the script options as needed (ebook format, upstream links, output directory).  
-Launch the script with: ```bookmenu {query}```.
+Launch the script with: ```bookmenu {query}```.  
 Once started:
 n -> go to the next book
 p -> go to the previous book
