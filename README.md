@@ -9,7 +9,7 @@ Inspired by: https://lbry.tv/@metalx1000:c/retro-style-most-wanted:2
 - wget
 
 ## installation
-Arch Linux: ```yay -S bookmenu-git || ${your_aur_helper} -S bookmenu-git```  
+Arch Linux: ```${your_aur_helper} -S bookmenu-git```  
 Edit the script options as needed (ebook format, upstream links, output directory).
 
 ## usage
