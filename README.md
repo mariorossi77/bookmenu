@@ -9,10 +9,10 @@ Inspired by: https://lbry.tv/@metalx1000:c/retro-style-most-wanted:2
 - wget
 
 ## installation
-Arch Linux: ```yay -S bookmenu-git || ${your_aur_helper} -S bookmenu-git```
+Arch Linux: ```yay -S bookmenu-git || ${your_aur_helper} -S bookmenu-git```  
+Edit the script options as needed (ebook format, upstream links, output directory).
 
 ## usage
-Edit the script options as needed (ebook format, upstream links, output directory).  
 Launch the script with: ```bookmenu {query}```.  
 Once started:  
 n -> go to the next book  
