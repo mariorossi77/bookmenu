@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 FORMAT="" # e.g. epub, mobi
-OUT="$HOME/Downloads" # path to save books
+OUT="$HOME/.bookmenu" # path to save books
 URL1="https://1lib.eu/s" # covers and info
 URL2="http://library.lol/main" # download links
 URL3="https://ipfs.io/ipfs" # final upstream
@@ -14,7 +14,8 @@ IMAGE="/tmp/bookmenu_image"
 TEXT="/tmp/bookmenu_text"
 QUERY=$@
 
-[[ -z $QUERY ]] && { echo "usage: bookmenu {query}"; exit 2; }
+[[ ! -d "$OUT" ]] && { mkdir -p $OUT; }
+[[ -z "$QUERY" ]] && { echo "usage: bookmenu {query}"; exit 2; }
 
 get_index() { wget -O - -q "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
