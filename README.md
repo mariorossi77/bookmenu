@@ -12,6 +12,10 @@ Inspired by: https://lbry.tv/@metalx1000:c/retro-style-most-wanted:2
 Arch Linux: ```${your_aur_helper} -S bookmenu-git```  
 Edit the script options as needed (ebook format, upstream links, output directory).
 
+## update
+Arch Linux: since the package is '*-git': ```${your_aur_helper} -Syu --devel```  
+omitting ```--devel``` won't update the package
+
 ## usage
 Launch the script with: ```bookmenu {query}```.  
 Once started:  
