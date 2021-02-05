@@ -8,7 +8,7 @@ Inspired by: https://lbry.tv/@metalx1000:c/retro-style-most-wanted:2
 - chafa
 - wget
 
-## installation
+## install
 Arch Linux: ```${your_aur_helper} -S bookmenu-git```  
 Edit the script options as needed (ebook format, upstream links, output directory).
 
