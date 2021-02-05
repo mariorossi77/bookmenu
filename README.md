@@ -17,8 +17,7 @@ Arch Linux: since the package is *-git: ```${your_aur_helper} -Syu --devel```
 omitting ```--devel``` won't update the package
 
 ## usage
-Launch the script with: ```bookmenu {query}```.  
-Once started:  
+Launch the script with: ```bookmenu {query}```   
 n -> go to the next book  
 p -> go to the previous book  
 d -> download the book  
