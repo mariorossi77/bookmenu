@@ -19,5 +19,5 @@ p -> go to the previous book
 d -> download the book  
 q -> quit the tui  
 
-## issues
+## known issues
 If you are using the kitty terminal emulator replace viu with chafa.
