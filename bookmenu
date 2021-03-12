@@ -40,7 +40,7 @@ main() {
                 while :; do
                         let limit=$max+1
                         [[ $count == "$limit" ]] && break
-                        space=$(( ($(tput cols)/2)+1 ))
+                        space=$(( $(tput cols)/3 ))
                         height=$(( ($(tput lines)*10)/15 ))
                         width=$(( ($height*15)/10  ))
                         link=$(sed -n "${count}p" $LIST)
