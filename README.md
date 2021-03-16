@@ -8,7 +8,7 @@ Inspired by: https://lbry.tv/@metalx1000:c/retro-style-most-wanted:2
 - viu (https://github.com/atanunq/viu)
 - wget
 
-## install
+## installation
 Arch based distros: ```${your_aur_helper} -S bookmenu-git```  
 > The PKGBUILD is currently missing 'viu' as a dependency, please install it (`pacman -S viu`) manually.  
 
