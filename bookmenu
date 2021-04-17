@@ -2,7 +2,7 @@
 
 FORMAT="" # e.g. epub, mobi
 OUT="$HOME/.bookmenu" # path to save books
-URL1="https://1lib.eu/s"
+URL1="https://it1lib.org/s"
 URL2="http://library.lol/main"
 URL3="https://ipfs.io/ipfs"
 INDEX="/tmp/bookmenu_index"
