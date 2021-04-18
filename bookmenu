@@ -47,7 +47,7 @@ main() {
                         data=$(sed -n "${count}p" $INFO)
                         author=$(grep 'author' $INDEX | cut -d">" -f3 | cut -d "<" -f1 | sed -r '/^\s*$/d' | sed -n "${count}p")
                         extension=$(cut -d"," -f1 <<< $data)
-                        size=$(cut -d"," -f2 <<< $data)
+                        size=$(cut -d"," -f2- <<< $data)
                         sed -n "${count}p" $TITLE | sed -e "s/.\{${space}\}/&\n/g" > $TEXT
                         echo -e "\nAuthor: $author\nFormat: $extension\nSize:$size" >> $TEXT
                         load $link $COVER; viu -w "$width" -h "$height" $COVER > $IMAGE; termset; paste $IMAGE $TEXT
