@@ -19,7 +19,7 @@ QUERY=$@
 
 get_index() { wget -O - -q "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
-get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +5 | sed -e "s/...$//" > $TITLE; }
+get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +4 | sed -e "s/...$//" > $TITLE; }
 get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
 termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
 load() { clear; wget "$1" -O "$2"; clear; }
