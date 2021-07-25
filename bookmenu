@@ -15,7 +15,7 @@ TEXT="/tmp/bookmenu_text"
 QUERY=$@
 
 [[ ! -d "$OUT" ]] && { mkdir -p $OUT; }
-[[ -z "$QUERY" ]] && { echo "usage: bookmenu {query}"; exit 2; }
+[[ -z "$QUERY" ]] && { echo "usage: ${$0##*/} {query}"; exit 2; }
 
 get_index() { wget -O - -q "${URL1}/${QUERY}/?extension=$FORMAT" > $INDEX; }
 get_list() { grep "data-src" $INDEX | cut -d'"' -f8 | sed '/^\//d' > $LIST; max=$(wc -l $LIST | cut -d' ' -f1); }
