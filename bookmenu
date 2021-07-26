@@ -23,7 +23,7 @@ get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +4 | sed -
 get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
 termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
 load() { clear; wget "$1" -O "$2"; clear; }
-prompt() { echo -ne "\n[${count}/${max}] ${1}[d]ownload [r]ead [q]uit\n"; }
+prompt() { echo -ne "\n[${count}/${max}] ${1}[d]ownload [q]uit\n"; }
 
 save() { hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
         upstream=$(grep $URL3 <<< "$(curl -s $URL2/"${hashsum^^}")" | cut -d'"' -f2)
