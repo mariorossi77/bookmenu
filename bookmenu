@@ -23,13 +23,12 @@ get_title() { grep "text-decoration" $INDEX | cut -d'>' -f2 | tail -n +4 | sed -
 get_info() { grep 'MB\|KB' $INDEX | cut -d">" -f2 | cut -d"<" -f1 > $INFO; }
 termset() { [[ $1 == "reset" ]] && { tput cnorm; stty echo; trap 2; } || { tput civis; stty -echo; trap '' 2; }; }
 load() { clear; wget "$1" -O "$2"; clear; }
-prompt() { echo -ne "\n[${count}/${max}] ${1}[d]ownload [q]uit\n"; }
+prompt() { echo -ne "\n[${count}/${max}] ${1}[d]ownload [r]ead [q]uit\n"; }
 
-save() { echo "loading...";
-        hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
+save() { hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
         upstream=$(grep $URL3 <<< "$(curl -s $URL2/"${hashsum^^}")" | cut -d'"' -f2)
         [[ -z $upstream ]] && { fail=$count; down=0; return 1; }
-        [[ -z $1 ]] && name=$hashsum || name=$1 # set filename to hashsum if user input is empty
+        [[ -z $1 ]] && name=$hashsum || name=$1
         clear; load "$upstream" "$OUT/$name.${extension,,}"; }
 
 main() {
@@ -40,18 +39,19 @@ main() {
                 while :; do
                         let limit=$max+1
                         [[ $count == "$limit" ]] && break
-                        space=$(( ($(tput cols)*10)/25 ))
-                        width=$(( ($(tput cols)*10)/25 ))
-                        height=$(( $width/2 ))
+                        width=$((($(tput cols)*10)/25))
+                        height=$(($(tput lines)-5))
                         link=$(sed -n "${count}p" $LIST)
                         data=$(sed -n "${count}p" $INFO)
                         author=$(grep 'author' $INDEX | cut -d">" -f3 | cut -d "<" -f1 | sed -r '/^\s*$/d' | sed -n "${count}p")
                         extension=$(cut -d"," -f1 <<< $data)
                         size=$(cut -d"," -f2- <<< $data)
-                        sed -n "${count}p" $TITLE | sed -e "s/.\{${space}\}/&\n/g" > $TEXT
+                        sed -n "${count}p" $TITLE | sed -e "s/.\{${width}\}/&\n/g" > $TEXT
                         echo -e "\nAuthor: $author\nFormat: $extension\nSize:$size" >> $TEXT
                         load $link $COVER; viu -w "$width" -h "$height" $COVER > $IMAGE; termset; paste $IMAGE $TEXT
-                        [[ $max == 1 ]] && prompt || { [[ $count == 1 ]] && prompt "[n]ext "; [[ $max == "$count" ]] && prompt "[p]revious "; [[ $count != 1 ]] && [[ $max != "$count" ]] && prompt "[p]revious [n]ext "; }
+                        [[ $max == 1 ]] && prompt || { [[ $count == 1 ]] && prompt "[n]ext ";
+                        [[ $max == "$count" ]] && [[ $down != "$count" ]] && prompt "[p]revious ";
+                        [[ $count != 1 ]] && [[ $max != "$count" ]] && prompt "[p]revious [n]ext "; }
                         [[ $fail == "$count" ]] && echo "ipfs download unavailable for this book"
                         [[ $down == "$count" ]] && echo "saved to: \"$OUT/$name.${extension,,}\""
                         while :; do
@@ -75,7 +75,6 @@ main() {
                 next=1; clear; done
         fi
         termset reset
-        [[ $end != 1 ]] && [[ $count == 1 ]] && { echo "no books found"; exit 1; } || clear
+        [[ $end != 1 ]] && [[ $count == 1 ]] && { echo "no books found"; exit 1; }
 }
-
 main
