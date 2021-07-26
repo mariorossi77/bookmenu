@@ -10,7 +10,7 @@ Inspired by: https://odysee.com/@metalx1000:c/retro-style-most-wanted
 
 ## installation
 Arch based distros: ```$your_aur_helper -S bookmenu-git```  
-Edit the script options as needed (ebook format, upstream links, output directory).
+Edit the script options as needed (ebook format, upstream links, output directory and TUI size).
 
 ## usage
 Launch the script with: ```bookmenu {query}```   
