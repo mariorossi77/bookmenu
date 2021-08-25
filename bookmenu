@@ -32,7 +32,7 @@ save() { hashsum=$(cut -d'/' -f9 <<< $link | cut -d '.' -f1);
         clear; load "$upstream" "$OUT/$name.${extension,,}"; }
 
 main() {
-        next=1; count=1; max=0; down=0; fail=0; size=0;
+        next=1; count=1; max=0; down=0; fail=0; size=0; rterm=$TERM
         rm $INDEX $LIST $TITLE $INFO $COVER $IMAGE $TEXT 2>/dev/null
         get_index; get_list; get_title; get_info
         if [[ -s $LIST ]]; then
@@ -48,7 +48,7 @@ main() {
                         size=$(cut -d"," -f2- <<< $data)
                         sed -n "${count}p" $TITLE | sed -e "s/.\{${width}\}/&\n/g" > $TEXT
                         echo -e "\nAuthor: $author\nFormat: $extension\nSize:$size" >> $TEXT
-                        load $link $COVER; viu -w "$width" -h "$height" $COVER > $IMAGE; termset; paste $IMAGE $TEXT
+                        load $link $COVER; TERM="book" viu -w "$width" -h "$height" $COVER > $IMAGE; TERM=$rterm termset; paste $IMAGE $TEXT
                         [[ $max == 1 ]] && prompt || { [[ $count == 1 ]] && prompt "[n]ext ";
                         [[ $max == "$count" ]] && [[ $down != "$count" ]] && prompt "[p]revious ";
                         [[ $count != 1 ]] && [[ $max != "$count" ]] && prompt "[p]revious [n]ext "; }
