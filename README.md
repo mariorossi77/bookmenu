@@ -19,7 +19,6 @@ p -> go to the previous book
 d -> download the book  
 q -> quit the tui  
 
-## quirks 
-- If you are using the kitty terminal emulator replace viu with chafa.  
+## quirks   
 - Many ISPs have started blacklisting the domains used to scrape the books information.  
 Please update your /etc/resolv.conf to use a different DNS or even better, host one by yourself.
