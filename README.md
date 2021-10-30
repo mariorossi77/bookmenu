@@ -9,8 +9,8 @@ Inspired by: https://odysee.com/@metalx1000:c/retro-style-most-wanted
 - wget
 
 ## installation
-Arch based distros can install the [bookmenu-git]("https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=bookmenu-git") package.   
-Edit the script options as needed (ebook format, upstream links, output directory and TUI size).
+For arch based distros the bookmenu-git package is available in the AUR.  
+Edit the script options as needed (ebook format, upstream links, output dir, etc..).
 
 ## usage
 Launch the script with: ```bookmenu {query}```   
