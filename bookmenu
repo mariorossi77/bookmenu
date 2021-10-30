@@ -15,6 +15,7 @@ IMAGE="$TMPDIR/bookmenu_image"
 TEXT="$TMPDIR/bookmenu_text"
 QUERY=$@
 
+[[ ! -d "$TMPDIR" ]] && { mkdir -p $TMPDIR; }
 [[ ! -d "$OUT" ]] && { mkdir -p $OUT; }
 [[ -z "$QUERY" ]] && { echo "usage: ${0##*/} {query}"; exit 2; }
 
