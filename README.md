@@ -22,3 +22,4 @@ q -> quit the tui
 ## quirks   
 - Many ISPs have started blacklisting the domains used to scrape the books information.  
 Please update your /etc/resolv.conf to use a different DNS or even better, host one by yourself.
+- Regarding the annoying wget "SSL_INIT" even when in quiet mode, it will be fixed in the next wget release: https://lists.gnu.org/archive/html/bug-wget/2021-09/msg00010.html
