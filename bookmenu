@@ -48,12 +48,13 @@ main() {
                         author=$(grep 'author' $INDEX | cut -d">" -f3 | cut -d "<" -f1 | sed -r '/^\s*$/d' | sed -n "${count}p")
                         extension=$(cut -d"," -f1 <<< $data)
                         size=$(cut -d"," -f2- <<< $data)
-                        sed -n "${count}p" $TITLE | sed -e "s/.\{${width}\}/&\n/g" > $TEXT
+                        echo -e "\n\n"
+                        sed -n "${count}p" $TITLE | sed -e "s/.\{${width}\}/&\n/g" >> $TEXT
                         echo -e "\nAuthor: $author\nFormat: $extension\nSize:$size" >> $TEXT
                         load $link $COVER;
                         #TERM="book" viu -w "$width" -h "$height" $COVER > $IMAGE;
-                        TERM=book chafa $COVER > $IMAGE;
-                        TERM=$rterm termset;
+                        chafa $COVER > $IMAGE;
+                        #TERM=$rterm termset;
                         paste $IMAGE $TEXT
                         [[ $max == 1 ]] && prompt || { [[ $count == 1 ]] && prompt "[n]ext ";
                         [[ $max == "$count" ]] && [[ $down != "$count" ]] && prompt "[p]revious ";
