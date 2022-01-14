@@ -5,7 +5,7 @@ Inspired by: https://odysee.com/@metalx1000:c/retro-style-most-wanted
 ![preview](preview.png)
 
 ## requirements
-- viu (https://github.com/atanunq/viu)
+- chafa
 - wget
 
 ## installation
