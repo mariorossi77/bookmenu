@@ -51,10 +51,10 @@ main() {
                         echo -e "\n\n" > $TITLE
                         sed -n "${count}p" $TITLE | sed -e "s/.\{${width}\}/&\n/g" >> $TEXT
                         echo -e "\nAuthor: $author\nFormat: $extension\nSize:$size" >> $TEXT
-                        load $link $COVER;
-                        #TERM="book" viu -w "$width" -h "$height" $COVER > $IMAGE;
-                        chafa $COVER > $IMAGE;
-                        #TERM=$rterm termset;
+                        load $link $COVER
+                        #TERM="book" viu -w "$width" -h "$height" $COVER > $IMAGE
+                        chafa $COVER > $IMAGE
+                        #TERM=$rterm termset
                         paste $IMAGE $TEXT
                         [[ $max == 1 ]] && prompt || { [[ $count == 1 ]] && prompt "[n]ext ";
                         [[ $max == "$count" ]] && [[ $down != "$count" ]] && prompt "[p]revious ";
@@ -70,7 +70,10 @@ main() {
                                         [[ $count != 1 ]] && { next=0; let count--; break; }
                                         ;;
                                         d)
-                                        termset reset; read -p "filename: " filename; save "$filename"; termset
+                                        termset reset
+                                        read -p "filename: " filename
+                                        save "$filename"
+                                        termset
                                         [[ $fail == 0 ]] && down=$count; next=0; break;;
                                         q)
                                         end=1; break;;
